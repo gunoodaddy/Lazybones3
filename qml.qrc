@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/CaptureWindow.qml</file>
+        <file>qml/DropBoxSettingWindow.qml</file>
+        <file>qml/GameScreenListWindow.qml</file>
+        <file>qml/GameScreenSettingWindow.qml</file>
+        <file>qml/InputMethodSelectWindow.qml</file>
+        <file>qml/MacroActionSelectWindow.qml</file>
+        <file>qml/main.qml</file>
+        <file>qml/TextEditorWindow.qml</file>
+    </qresource>
+</RCC>
