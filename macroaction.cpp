@@ -215,7 +215,8 @@ void MacroAction::parseLine(MacroAction *newAction, MacroAction::State &state, i
 		{
 			if(state == MacroAction::InputActionState)
 			{
-				newAction->setActionType(MacroAction::DoInputAction);
+				if(newAction->actionType() == MacroAction::NoneAction)
+					newAction->setActionType(MacroAction::DoInputAction);
 				newAction->inputAction()->copy(inputAction);
 				// comment parsing
 				newAction->setComment(getCommentString(line, parsedIndex));

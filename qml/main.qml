@@ -220,6 +220,7 @@ Window {
 				onClicked: {
 					gameScreenWindow.visible = true
 					gameScreenWindow.requestActivate()
+					gameScreenWindow.raise()
 				}
 			}
 
@@ -329,6 +330,7 @@ Window {
 					gc()
 					selectWindow.visible = true
 					selectWindow.requestActivate()
+					selectWindow.raise()
 				}
 			}
 

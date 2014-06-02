@@ -7,8 +7,8 @@ Window {
 	id: captureWindow
 	width: Screen.desktopAvailableWidth
 	height: Screen.desktopAvailableHeight
-	flags: Qt.FramelessWindowHint | Qt.Window
-	modality: Qt.ApplicationModal
+	flags: Qt.FramelessWindowHint | Qt.Window | Qt.WindowStaysOnTopHint
+	//modality: Qt.ApplicationModal
 
 	property real mouseX: -1
 	property real mouseY: -1
@@ -29,6 +29,7 @@ Window {
 
 	onVisibleChanged: {
 		if(visible) {
+			raise();
 			__captureId ++
 			bgImage.source = "image://capture/" + __captureId;
 
@@ -38,7 +39,9 @@ Window {
 			timerText.start()
 			positionEffect.opacity = __intitialEffectOpacity
 			timerSprite.start()
+			requestActivate();
 		}
+		console.log("onVisibleChanged : " + visible)
 	}
 
 	Rectangle {

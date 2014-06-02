@@ -239,6 +239,7 @@ Window {
 				text: "Select"
 				onClicked: {
 					inputActionSelectWindow.visible = true
+					inputActionSelectWindow.raise()
 				}
 			}
 
@@ -453,6 +454,7 @@ Window {
 					onClicked: {
 						inputActionSelectWindow.inputAction = itemData
 						inputActionSelectWindow.show()
+						inputActionSelectWindow.raise()
 					}
 				}
 

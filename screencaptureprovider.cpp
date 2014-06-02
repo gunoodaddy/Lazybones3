@@ -22,6 +22,7 @@ QPixmap ScreenCaptureProvider::requestPixmap(const QString &/*id*/, QSize * /*si
 	if (screen)
 	{
 		QPixmap screenShotPixmap = screen->grabWindow(0);
+		qDebug() << screen->geometry();
 		setLastPixmap(screenShotPixmap);
 
 		return screenShotPixmap;

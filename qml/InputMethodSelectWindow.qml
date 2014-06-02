@@ -12,7 +12,6 @@ Window {
 
 	width: 465
 	height: 370
-	modality: Qt.WindowModal
 
 	signal actionAdded();
 	signal actionUpdated();
@@ -274,9 +273,7 @@ Window {
 						text: "Click"
 						height: parent.implicitHeight
 						onClicked: {
-							captureWindow.flags |= Qt.WindowStaysOnTopHint
-							captureWindow.show()
-							captureWindow.raise()
+							captureWindow.showFullScreen()
 						}
 					}
 
