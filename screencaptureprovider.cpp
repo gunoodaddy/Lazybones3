@@ -21,9 +21,7 @@ QPixmap ScreenCaptureProvider::requestPixmap(const QString &/*id*/, QSize * /*si
 	QScreen *screen = QGuiApplication::primaryScreen();
 	if (screen)
 	{
-		QPixmap screenShotPixmap = screen->grabWindow(0, screen->availableGeometry().x(), screen->availableGeometry().y(), screen->availableGeometry().width(), screen->availableGeometry().height());
-		//QPixmap copied = screenShotPixmap.copy(screen->availableGeometry());
-		//qDebug() << "SSSSSSSSS " << copied << screen->availableGeometry();
+		QPixmap screenShotPixmap = screen->grabWindow(0);
 		setLastPixmap(screenShotPixmap);
 
 		return screenShotPixmap;

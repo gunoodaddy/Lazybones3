@@ -109,8 +109,6 @@ QColor Lazybones::getPixelColor(QScreen *screen, QImage *image, int pixelX, int 
 	qreal ratioH = image->size().width() / screen->size().width();
 	qreal ratioV = image->size().height() / screen->size().height();
 
-	qDebug() << pixelX << pixelY;
-
 	QColor clr = image->pixel(pixelX * ratioH, pixelY * ratioV);
 	return clr;
 }

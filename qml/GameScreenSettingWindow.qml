@@ -109,7 +109,7 @@ Window {
 				Button {
 					text: "Select Pixel"
 					onClicked: {
-						captureWindow.show()
+						captureWindow.showFullScreen()
 					}
 				}
 

@@ -6,7 +6,7 @@ import gunoodaddy 1.0
 Window {
 	id: captureWindow
 	width: Screen.desktopAvailableWidth
-	height: Qt.platform.os === "osx" ? Screen.height - 22 : Screen.desktopAvailableHeight
+	height: Screen.desktopAvailableHeight
 	flags: Qt.FramelessWindowHint | Qt.Window
 	modality: Qt.ApplicationModal
 
@@ -60,8 +60,8 @@ Window {
 	}
 
 	Rectangle {
-		x: lazybones.localX(mouseX - (width/2))
-		y: lazybones.localY(mouseY - (height/2))
+		x: mouseX - (width/2)
+		y: mouseY - (height/2)
 		radius: width / 2
 		height: 5
 		width: 5
@@ -70,8 +70,8 @@ Window {
 
 	Rectangle {
 		id: positionEffect
-		x: lazybones.localX(mouseX - (width/2))
-		y: lazybones.localY(mouseY - (height/2))
+		x: mouseX - (width/2)
+		y: mouseY - (height/2)
 		opacity: __intitialEffectOpacity
 		radius: width / 2
 		height: 50
@@ -109,7 +109,10 @@ Window {
 
 		onOpacityChanged: {
 			if(opacity === 0)
+			{
+				visibility = Window.Windowed
 				captureWindow.hide()
+			}
 		}
 
 		states: [
@@ -131,8 +134,8 @@ Window {
 		anchors.fill: parent
 		hoverEnabled: true
 		onClicked: {
-			captureWindow.mouseX = lazybones.screenX(mouse.x)
-			captureWindow.mouseY = lazybones.screenY(mouse.y)
+			captureWindow.mouseX = mouse.x
+			captureWindow.mouseY = mouse.y
 			captureWindow.mouseButton = mouse.button
 			captureWindow.color = lazybones.pixelColor(Math.round(captureWindow.mouseX), Math.round(captureWindow.mouseY))
 			positionEffect.opacity = __intitialEffectOpacity

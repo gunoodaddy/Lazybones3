@@ -148,6 +148,12 @@ public:
 		SETTING_MANAGER->save();
 	}
 
+	Q_INVOKABLE QRect availableGeometry(void)
+	{
+		QScreen *screen = QGuiApplication::primaryScreen();
+		return screen->availableGeometry();
+	}
+
 	Q_INVOKABLE qreal screenX(qreal x)
 	{
 		QScreen *screen = QGuiApplication::primaryScreen();
