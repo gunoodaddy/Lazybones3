@@ -829,7 +829,6 @@ void MacroAction::doMoveItemsToStash(void)
 	int x = topLeft->pixelX() + (stepW / 2);
 	int y = topLeft->pixelY() + (stepH / 2);
 
-	Lazybones::inputEventManager()->worker()->doMouseLeftClick(158, 194);
 	QThread::msleep(300);
 
 	int delay = 180;
@@ -911,6 +910,7 @@ void MacroAction::doEatAllItem(int itemTypes)
 {
 	QRect windowRect = presetData()->windowRect();
 	int tryCount = 5;
+	int failOverCount = 2;
 	int winW = windowRect.width();
 	int winH = windowRect.height();
 	QRect hintRect = QRect(winW / 4, winH / 4, winW / 2, winH / 2);
@@ -978,7 +978,11 @@ void MacroAction::doEatAllItem(int itemTypes)
 		}
 
 		if(checked == findInfoList.size())
-			break;
+		{
+			failOverCount--;
+			if(failOverCount <= 0)
+				break;
+		}
 	}
 
 	if(legendaryCount > 0)

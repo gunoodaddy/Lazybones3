@@ -384,7 +384,7 @@ Window {
 					font.pixelSize: __statSize
 					color: "#E6DB06"
 					style: Text.Raised; styleColor: "black"
-					text: "ITEM2 : " + lazybones.currentMacroPreset.statsLegendaryCount
+					text: "ITEM2 : " + lazybones.currentMacroPreset.statsMagicRareCount
 				}
 
 				Text {
