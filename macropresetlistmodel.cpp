@@ -24,10 +24,13 @@ QHash<int, QByteArray> MacroPresetListModel::roleNames() const
 	return roles;
 }
 
-QSharedPointer<MacroPresetData> MacroPresetListModel::find(QString title)
+QSharedPointer<MacroPresetData> MacroPresetListModel::find(QString title, int exceptIndex)
 {
 	for(int i = 0; i < m_model.size(); i++)
 	{
+		if(i == exceptIndex)
+			continue;
+
 		if(m_model[i]->title() == title)
 		{
 			return m_model[i];

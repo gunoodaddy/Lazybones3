@@ -251,13 +251,10 @@ void MacroAction::parseLine(MacroAction *newAction, MacroAction::State &state, i
 		}
 
 		QString arguments = line.mid(startBraceIndex+1, (endBraceIndex - startBraceIndex - 1));
-		if(arguments.length() <= 0)
+		if(arguments.length() > 0)
 		{
-			state = MacroAction::ErrorState;
-			break;
+			newAction->setArgumentString(arguments);
 		}
-
-		newAction->setArgumentString(arguments);
 		parsedIndex = endBraceIndex + 1;
 		state = MacroAction::CommentState;
 		break;
@@ -286,7 +283,6 @@ MacroAction *MacroAction::fromTextStream(QTextStream &ts)
 	while ( !ts.atEnd() )
 	{
 		QString line = ts.readLine().trimmed();
-
 		parsedIndex = 0;
 		parseLine(newAction, state, parsedIndex, line);
 

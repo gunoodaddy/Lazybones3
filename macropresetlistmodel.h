@@ -15,7 +15,7 @@ public:
 	void removeAt(int index);
 	void deleteAt(int index);
 	void copy(int index, QSharedPointer<MacroPresetData> presetData);
-	QSharedPointer<MacroPresetData> find(QString title);
+	QSharedPointer<MacroPresetData> find(QString title, int exceptIndex = -1);
 
 	void update(MacroPresetData *data);
 	QSharedPointer<MacroPresetData> at(int index) { return m_model.at(index); }

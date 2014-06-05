@@ -51,7 +51,7 @@ static QString toKeyName(int code)
 }
 
 InputAction::InputAction(QObject *parent) :
-	QObject(parent), m_action(InputAction::None), m_key(-1), m_xPos(-1), m_yPos(-1), m_delayedMsec(1000)
+	QObject(parent), m_action(InputAction::None), m_key(-1), m_xPos(-1), m_yPos(-1), m_delayedMsec(0)
   , m_running(false), m_keyRecording(false), m_useLastPosition(false), m_model(NULL)
 {
 	__initTimer();
@@ -94,6 +94,7 @@ void InputAction::initialize(void)
 	KEY_MAPPING[Qt::Key_Escape] = "ESC";
 	KEY_MAPPING[Qt::Key_Enter] = "ENTER";
 	KEY_MAPPING[Qt::Key_Return] = "RETURN";
+	KEY_MAPPING[Qt::Key_Space] = "SPACE";
 	KEY_MAPPING[Qt::Key_F1] = "F1";
 	KEY_MAPPING[Qt::Key_F2] = "F2";
 	KEY_MAPPING[Qt::Key_F3] = "F3";
@@ -179,7 +180,7 @@ QString InputAction::toLineCode(void)
 	codes += ACTION_MAPPING[m_action];
 	codes += "(";
 	codes += args;
-	if(m_delayedMsec > 0)
+	if(m_delayedMsec >= 0)
 	{
 		if(args.length() > 0)
 			codes += ", ";

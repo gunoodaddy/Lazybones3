@@ -37,6 +37,13 @@ void SettingManager::__makeDefaultDropBoxData(void)
 
 void SettingManager::load(void)
 {
+//	// to migration
+//	__loadMacroPresetListOld();
+//	__loadDropBox();
+//	__loadGameScreen();
+//	save();
+//	return;
+
 	__loadDropBox();
 	__loadGameScreen();
 	__loadMacroPresetList();

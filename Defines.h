@@ -12,6 +12,7 @@ const char kScreenName_InventoryTopLeft[] = "InventoryTopLeft";
 const char kScreenName_InventoryBottomRight[] = "InventoryBottomRight";
 const char kScreenName_Warning[] = "Warning";
 const char kScreenName_GameMenu[] = "GameMenu";
+const char kScreenName_InventoryNotFull[] = "InventoryNotFull";
 
 const char kReservedToken_LastPos[] = "$LASTPOS";
 

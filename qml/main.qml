@@ -144,17 +144,17 @@ Window {
 					lazybones.currentMacroPresetIndex = currentIndex
 				}
 				onActiveFocusChanged: {
-					if(!activeFocus) {
-						if(editText.length > 0) {
-							if(!lazybones.findMacroPreset(editText))
-								lazybones.currentMacroPreset.title = editText
-							else {
-								warningPopup.text = "Already same title exists.";
-								warningPopup.visible = true;
-								editText = lazybones.currentMacroPreset.title;
-							}
-						}
-					}
+//					if(!activeFocus) {
+//						if(editText.length > 0) {
+//							if(!lazybones.findMacroPreset(editText))
+//								lazybones.currentMacroPreset.title = editText
+//							else {
+//								warningPopup.text = "Already same title exists.";
+//								warningPopup.visible = true;
+//								editText = lazybones.currentMacroPreset.title;
+//							}
+//						}
+//					}
 				}
 			}
 			Button {
@@ -171,6 +171,15 @@ Window {
 				text: "Save"
 				anchors.verticalCenter: parent.verticalCenter
 				onClicked: {
+					if(comboPreset.editText.length > 0) {
+						if(!lazybones.findMacroPreset(comboPreset.editText, true))
+							lazybones.currentMacroPreset.title = comboPreset.editText
+						else {
+							warningPopup.text = "Already same title exists.";
+							warningPopup.visible = true;
+							comboPreset.editText = lazybones.currentMacroPreset.title;
+						}
+					}
 					saveSetting();
 				}
 			}

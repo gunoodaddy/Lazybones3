@@ -88,9 +88,9 @@ public:
 		}
 	}
 
-	Q_INVOKABLE bool findMacroPreset(QString title)
+	Q_INVOKABLE bool findMacroPreset(QString title, bool exceptCurrent = false)
 	{
-		return macroPresetList()->find(title);
+		return macroPresetList()->find(title, exceptCurrent ? m_currentMacroPresetIndex : -1);
 	}
 
 	Q_INVOKABLE QString makeNewMacroTitle(void)
