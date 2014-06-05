@@ -118,8 +118,12 @@ Window {
 			type: MacroAction.Sleep
 		}
 		ListElement {
-			text: "FindLegendaryItem"
-			type: MacroAction.FindLegendaryItem
+			text: "EatLegendaryItem"
+			type: MacroAction.EatLegendaryItem
+		}
+		ListElement {
+			text: "EatAllItem"
+			type: MacroAction.EatAllItem
 		}
 		ListElement {
 			text: "SaveScreenShot"
@@ -132,6 +136,10 @@ Window {
 		ListElement {
 			text: "DisassembleAllItemWithoutLegendary"
 			type: MacroAction.DisassembleAllItemWithoutLegendary
+		}
+		ListElement {
+			text: "MoveItemsToStash"
+			type: MacroAction.MoveItemsToStash
 		}
 	}
 

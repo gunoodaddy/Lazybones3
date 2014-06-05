@@ -41,6 +41,7 @@ public:
 	bool doit(void);
 
 private:
+	int parseKeyCode(const QString &str);
 
 signals:
 

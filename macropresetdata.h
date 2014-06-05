@@ -33,10 +33,14 @@ class MacroPresetData : public QObject
 	Q_PROPERTY(int statsLoopCount READ statsLoopCount NOTIFY statsLoopCountChanged)
 	Q_PROPERTY(int statsHangCount READ statsHangCount NOTIFY statsHangCountChanged)
 	Q_PROPERTY(int statsLegendaryCount READ statsLegendaryCount NOTIFY statsLegendaryCountChanged)
+	Q_PROPERTY(int statsMagicRareCount READ statsMagicRareCount NOTIFY statsMagicRareCountChanged)
 
 public:
 	explicit MacroPresetData(MacroPresetListModel *model = 0);
 	virtual ~MacroPresetData(void);
+
+	static MacroPresetData *dummyPresetData;
+	static void initialize(void);
 
 	void copy(QSharedPointer<MacroPresetData> presetData);
 	Q_INVOKABLE void insertAction(int index, MacroAction *newAction);
@@ -90,6 +94,7 @@ public:
 	int statsLoopCount(void) { return m_statsLoopCount; }
 	int statsHangCount(void) { return m_statsHangCount; }
 	int statsLegendaryCount(void) { return m_statsLegendaryCount; }
+	int statsMagicRareCount(void) { return m_statsMagicRareCount; }
 
 	void lock(void) { m_mutex.lock(); }
 	void unlock(void) { m_mutex.unlock(); }
@@ -103,6 +108,7 @@ public:
 		m_statsLoopCount = 0;
 		m_statsHangCount = 0;
 		m_statsLegendaryCount = 0;
+		m_statsMagicRareCount = 0;
 		m_statsTotalLoopTime = 0;
 		m_tempStartLoopTimeMsec = -1;
 		m_statsStartRunningTime = QDateTime::currentMSecsSinceEpoch();
@@ -135,6 +141,14 @@ public:
 		m_statsLegendaryCount++;
 		m_mutex.unlock();
 		emit statsLegendaryCountChanged();
+	}
+
+	void increaseMagicRareCount(void)
+	{
+		m_mutex.lock();
+		m_statsMagicRareCount++;
+		m_mutex.unlock();
+		emit statsMagicRareCountChanged();
 	}
 
 private:
@@ -179,6 +193,7 @@ signals:
 	void statsLoopCountChanged(void);
 	void statsHangCountChanged(void);
 	void statsLegendaryCountChanged(void);
+	void statsMagicRareCountChanged(void);
 
 private slots:
 	void onHangupCheckTimer(void);
@@ -204,6 +219,7 @@ private:
     int m_statsLoopCount;
 	int m_statsHangCount;
 	int m_statsLegendaryCount;
+	int m_statsMagicRareCount;
     int m_statsStartRunningTime;
     int m_statsTotalLoopTime;
     qint64 m_tempStartLoopTimeMsec;

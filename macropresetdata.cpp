@@ -12,6 +12,8 @@
 #define kForceGapIntervalMsec 100
 #define kHangupTimeout 45
 
+MacroPresetData *MacroPresetData::dummyPresetData;
+
 class MacroThreadWorker : public QThread
 {
 public:
@@ -175,7 +177,7 @@ public:
 MacroPresetData::MacroPresetData(MacroPresetListModel *model) : QObject(NULL)
   , m_mutex(QMutex::Recursive), m_threadWorker(NULL), m_presetModel(model)
   , m_model(this), m_currentIndex(0), m_repeat(true), m_maxIndex(-1), m_hangupSeconds(kHangupTimeout), m_remainHangUpSeconds(kHangupTimeout)
-  , m_statsLoopCount(0), m_statsHangCount(0), m_statsLegendaryCount(0)
+  , m_statsLoopCount(0), m_statsHangCount(0), m_statsLegendaryCount(0), m_statsMagicRareCount(0)
   , m_statsStartRunningTime(0)
 {
 	m_winRect.setRect(0, 0, 1024, 768);
@@ -188,6 +190,11 @@ MacroPresetData::MacroPresetData(MacroPresetListModel *model) : QObject(NULL)
 MacroPresetData::~MacroPresetData(void)
 {
 	stop();
+}
+
+void MacroPresetData::initialize(void)
+{
+	dummyPresetData = new MacroPresetData();
 }
 
 void MacroPresetData::read(QTextStream &in)
@@ -455,7 +462,7 @@ void MacroPresetData::onHangupCheckTimer(void)
 
 	if(m_remainHangUpSeconds <= 0)
 	{
-		SETTING_MANAGER->dropBox()->doScreenShot("Hangup_", false, false);
+		SETTING_MANAGER->dropBox()->doScreenShot("Hangup_", windowRect(), false, false);
 
 		increaseHangCount();
 

@@ -6,7 +6,10 @@
 
 const char kLegendaryItemColor[] = "#ff8003";
 const char kSetItemColor[] = "#00ff00";
+const char kRareItemColor[] = "#F0F003";
+const char kMagicItemColor[] = "#5E5DE0";
 
+const char kScreenName_Stash[] = "Stash";
 const char kScreenName_BlackSmith[] = "BlackSmith";
 const char kScreenName_InventoryTopLeft[] = "InventoryTopLeft";
 const char kScreenName_InventoryBottomRight[] = "InventoryBottomRight";
@@ -17,3 +20,4 @@ const char kScreenName_InventoryNotFull[] = "InventoryNotFull";
 const char kReservedToken_LastPos[] = "$LASTPOS";
 
 #endif // DEFINES_H
+

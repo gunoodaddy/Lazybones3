@@ -24,6 +24,7 @@ Lazybones::Lazybones(QObject *parent) :
 
 void Lazybones::initialize(void)
 {
+	MacroPresetData::initialize();
 	InputAction::initialize();
 	MacroAction::initialize();
 

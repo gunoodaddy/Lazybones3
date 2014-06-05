@@ -114,7 +114,14 @@ bool CommandData::doit(void)
 	{
 		if(argCount() >= 1)
 		{
-			action.setKeyCode(arg(0).toInt());
+			int keyCode = parseKeyCode(arg(0));
+			if(keyCode < 0)
+			{
+				LOG_WARNING() << "INVALID KEY CODE :" << m_command << arg(0);
+				return false;
+			}
+			LOG_WARNING() << "KEY CODE :" << m_command << keyCode;
+			action.setKeyCode(keyCode);
 
 			lastArgIndex = 1;
 		}
@@ -130,6 +137,10 @@ bool CommandData::doit(void)
 	{
 		action.setDelayedMsec(arg(lastArgIndex).toInt());
 	}
+	else
+	{
+		action.setDelayedMsec(0);
+	}
 
 	qDebug() << "COMMAND LINE :" << action.description();
 
@@ -138,4 +149,49 @@ bool CommandData::doit(void)
 	action.doitNow();
 
 	return true;
+}
+
+int CommandData::parseKeyCode(const QString &str)
+{
+	QString keyName = str.toUpper();
+
+	if(str[0] == '\'')
+		keyName = str.mid(1, str.length() - 2).toUpper();
+
+	static QMap<QString, Qt::Key> KeyMap;
+	if(KeyMap.size() == 0)
+	{
+		KeyMap["ESC"] = Qt::Key_Escape;
+		KeyMap["ALT"] = Qt::Key_Alt;
+		KeyMap["CTRL"] = Qt::Key_Control;
+		KeyMap["SHIFT"] = Qt::Key_Shift;
+		KeyMap["SPACE"] = Qt::Key_Space;
+		KeyMap["ENTER"] = Qt::Key_Enter;
+		KeyMap["RETURN"] = Qt::Key_Return;
+		KeyMap["F1"] = Qt::Key_F1;
+		KeyMap["F2"] = Qt::Key_F2;
+		KeyMap["F3"] = Qt::Key_F3;
+		KeyMap["F4"] = Qt::Key_F4;
+		KeyMap["F5"] = Qt::Key_F5;
+		KeyMap["F6"] = Qt::Key_F6;
+		KeyMap["F7"] = Qt::Key_F7;
+		KeyMap["F8"] = Qt::Key_F8;
+		KeyMap["F9"] = Qt::Key_F9;
+		KeyMap["F10"] = Qt::Key_F10;
+		KeyMap["F11"] = Qt::Key_F11;
+		KeyMap["F12"] = Qt::Key_F12;
+	}
+
+	if(keyName.length() == 1
+			&& (keyName[0] >= '0' && keyName[0] <= '9'
+			|| keyName[0] >= 'A' && keyName[0] <= 'Z'))
+	{
+		return (int)keyName[0].toLatin1();
+	}
+
+	int res = KeyMap[keyName];
+	if(res > 0)
+		return res;
+
+	return -1;
 }

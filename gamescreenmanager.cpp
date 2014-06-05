@@ -191,10 +191,10 @@ QPoint GameScreenManager::findPixel(QColor clr, int redNoise, int greenNoise, in
 
 	if(!hintRect.isNull())
 	{
-		beginX = qMax(0, hintRect.x() - hintRect.width() / 2) * ratioH;
-		endX = qMin(image.width(), hintRect.x() + hintRect.width() / 2) * ratioH;
-		beginY = qMax(0, hintRect.y() - hintRect.height() / 2) * ratioV;
-		endY = qMin(image.height(), hintRect.y() + hintRect.height() / 2) * ratioV;
+		beginX = qMax(0, hintRect.x()) * ratioH;
+		endX = qMin(image.width(), hintRect.x() + hintRect.width()) * ratioH;
+		beginY = qMax(0, hintRect.y()) * ratioV;
+		endY = qMin(image.height(), hintRect.y() + hintRect.height()) * ratioV;
 	}
 
 	for(int i = beginX; i < endX; i++)

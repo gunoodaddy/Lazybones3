@@ -8,6 +8,7 @@
 #include <QPixmap>
 #include <QPainter>
 #include "settingmanager.h"
+#include "Logger.h"
 
 const QString REQ_FILE_NAME = "req.txt";
 const QString RES_FILE_NAME = "res.jpg";
@@ -56,15 +57,18 @@ public:
 					commandList.append(data);
 			}
 
+			QThread::msleep(100);
+
 			saveScreenShotResult(&commandList);
 
 			file.close();
 
 			QFile::remove(reqFilePath);
 		}
+		LOG_INFO() << "COMMAND READER THREAD FINISHED";
 	}
 
-	void saveScreenShotResult(QVector<QSharedPointer<CommandData> > * /*commandList*/)
+	void saveScreenShotResult(QVector<QSharedPointer<CommandData> > *commandList)
 	{
 		QString resFilePath = SETTING_MANAGER->dropBox()->dropBoxPath() + QDir::separator();
 		resFilePath += RES_FILE_NAME;

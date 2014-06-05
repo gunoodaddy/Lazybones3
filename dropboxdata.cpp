@@ -30,7 +30,7 @@ void DropBoxData::setRunning(bool running)
 	{
 		m_timerScreenShot.setInterval(m_screenShotIntervalSec * 1000);
 		m_timerScreenShot.start();
-		doScreenShot("", true, true);
+		doScreenShot("", QRect(), true, true);
 	}
 	else
 	{
@@ -75,7 +75,7 @@ bool DropBoxData::doScreenShotWithFilePath(QString filePath)
 	return false;
 }
 
-void DropBoxData::doScreenShot(QString prefix, bool showErrorPopup, bool checkMaxCount)
+void DropBoxData::doScreenShot(QString prefix, QRect rect, bool showErrorPopup, bool checkMaxCount)
 {
 	QString path = m_dropBoxPath;
 	path += QDir::separator();
@@ -88,6 +88,9 @@ void DropBoxData::doScreenShot(QString prefix, bool showErrorPopup, bool checkMa
 	if (screen)
 	{
 		QPixmap screenShotPixmap = screen->grabWindow(0);
+
+		screenShotPixmap = screenShotPixmap.copy(rect);
+
 		if(!screenShotPixmap.isNull())
 		{
 			if(screenShotPixmap.save(path, NULL, 100))

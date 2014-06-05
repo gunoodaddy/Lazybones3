@@ -48,6 +48,13 @@ public:
 		Else = 7,
 	};
 
+	enum ItemType {
+		MagicItem = 0x1,
+		RareItem = 0x2,
+		SetItem = 0x4,
+		LegendaryItem = 0x8,
+	};
+
 	enum ActionType {
 		NoneAction = 0,
 		DoInputAction = 1,
@@ -55,9 +62,11 @@ public:
 		WaitScreen = 9,
 		Sleep = 10,
 		RandomSleep = 13,
-		FindLegendaryItem = 12,
+		EatLegendaryItem = 12,
+		EatAllItem = 24,
 		Goto = 14,
 		DisassembleAllItemWithoutLegendary = 15,
+		MoveItemsToStash = 25,
 		LoopWaitScreenDoInputActionEnd = 16,
 		SaveScreenShot = 20,
 		CheckElapsedTime = 2,
@@ -208,12 +217,13 @@ public:
 	void copy(MacroAction *action);
 
 private:
-	qint64 __calculateDelayMsec(qint64 delayMsec);
-	void doFindLegendaryItem(void);
-	void doDisassembleAllItemWithoutLegendary(bool testMode = false);
-	void doLoopWaitScreenDoInputActionEnd(bool testMode = false);
+	qint64 calculateDelayMsec(qint64 delayMsec);
+	void doEatAllItem(int itemTypes);
+	void doMoveItemsToStash(void);
+	void doDisassembleAllItemWithoutLegendary(void);
+	void doLoopWaitScreenDoInputActionEnd(void);
 	void doInputAction(bool testMode = false);
-	void doInputActionChunk(bool testMode = false);\
+	void doInputActionChunk(bool testMode = false);
 	void doSaveScreenShot(void);
 
 	static void parseLine(MacroAction *newAction, MacroAction::State &state, int & parsedIndex, QString &line);

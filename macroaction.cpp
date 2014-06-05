@@ -67,9 +67,11 @@ void MacroAction::initialize(void)
 	ACTION_MAPPING[MacroAction::WaitScreen] = "WaitScreen";
 	ACTION_MAPPING[MacroAction::Sleep] = "Sleep";
 	ACTION_MAPPING[MacroAction::RandomSleep] = "RandomSleep";
-	ACTION_MAPPING[MacroAction::FindLegendaryItem] = "FindLegendaryItem";
+	ACTION_MAPPING[MacroAction::EatLegendaryItem] = "EatLegendaryItem";
+	ACTION_MAPPING[MacroAction::EatAllItem] = "EatAllItem";
 	ACTION_MAPPING[MacroAction::Goto] = "Goto";
 	ACTION_MAPPING[MacroAction::DisassembleAllItemWithoutLegendary] = "DisassembleAllItemWithoutLegendary";
+	ACTION_MAPPING[MacroAction::MoveItemsToStash] = "MoveItemsToStash";
 	ACTION_MAPPING[MacroAction::LoopWaitScreenDoInputActionEnd] = "LoopWaitScreenDoInputActionEnd";
 	ACTION_MAPPING[MacroAction::SaveScreenShot] = "SaveScreenShot";
 	ACTION_MAPPING[MacroAction::CheckElapsedTime] = "CheckElapsedTime";
@@ -514,7 +516,7 @@ MacroPresetData *MacroAction::presetData(void)
 {
 	if(m_model)
 		return m_model->presetData();
-	return NULL;
+	return MacroPresetData::dummyPresetData;
 }
 
 int MacroAction::realSleepTime(void)
@@ -617,8 +619,16 @@ bool MacroAction::doit()
 		presetData()->setCurrentIndex(m_macroIndex);
 		res = true;
 		break;
-	case MacroAction::FindLegendaryItem:
-		doFindLegendaryItem();
+	case MacroAction::EatAllItem:
+		doEatAllItem(MacroAction::LegendaryItem | MacroAction::SetItem | MacroAction::MagicItem | MacroAction::RareItem);
+		res = true;
+		break;
+	case MacroAction::EatLegendaryItem:
+		doEatAllItem(MacroAction::LegendaryItem | MacroAction::SetItem);
+		res = true;
+		break;
+	case MacroAction::MoveItemsToStash:
+		doMoveItemsToStash();
 		res = true;
 		break;
 	case MacroAction::DisassembleAllItemWithoutLegendary:
@@ -705,6 +715,7 @@ void MacroAction::setRecording(bool recording)
 
 void MacroAction::test(void)
 {
+	Lazybones::setEmergencyStop(false);
 	switch(m_actionType)
 	{
 	case MacroAction::DoInputActionChunk:
@@ -713,14 +724,20 @@ void MacroAction::test(void)
 	case MacroAction::DoInputAction:
 		doInputAction(true);
 		break;
-	case MacroAction::FindLegendaryItem:
-		doFindLegendaryItem();
+	case MacroAction::MoveItemsToStash:
+		doMoveItemsToStash();
+		break;
+	case MacroAction::EatAllItem:
+		doEatAllItem(MacroAction::LegendaryItem | MacroAction::SetItem | MacroAction::MagicItem | MacroAction::RareItem);
+		break;
+	case MacroAction::EatLegendaryItem:
+		doEatAllItem(MacroAction::LegendaryItem | MacroAction::SetItem);
 		break;
 	case MacroAction::DisassembleAllItemWithoutLegendary:
-		doDisassembleAllItemWithoutLegendary(true);
+		doDisassembleAllItemWithoutLegendary();
 		break;
 	case MacroAction::LoopWaitScreenDoInputActionEnd:
-		doLoopWaitScreenDoInputActionEnd(true);
+		doLoopWaitScreenDoInputActionEnd();
 		break;
 	case MacroAction::SaveScreenShot:
 		doSaveScreenShot();
@@ -730,7 +747,7 @@ void MacroAction::test(void)
 	}
 }
 
-qint64 MacroAction::__calculateDelayMsec(qint64 delayMsec)
+qint64 MacroAction::calculateDelayMsec(qint64 delayMsec)
 {
 	if(delayMsec > 0)
 	{
@@ -782,9 +799,9 @@ void MacroAction::doInputActionChunk(bool testMode)
 	}
 }
 
-void MacroAction::doLoopWaitScreenDoInputActionEnd(bool testMode)
+void MacroAction::doLoopWaitScreenDoInputActionEnd(void)
 {
-	while((testMode || presetData()->running()) && !Lazybones::isEmergencyStop())
+	while(!Lazybones::isEmergencyStop())
 	{
 		if(Lazybones::gameScreenManager()->isCurrentScreen(m_conditionScreenName, true))
 			return;
@@ -795,9 +812,9 @@ void MacroAction::doLoopWaitScreenDoInputActionEnd(bool testMode)
 	}
 }
 
-void MacroAction::doDisassembleAllItemWithoutLegendary(bool testMode)
+void MacroAction::doMoveItemsToStash(void)
 {
-	if(!Lazybones::gameScreenManager()->isCurrentScreen(kScreenName_BlackSmith, true))
+	if(!Lazybones::gameScreenManager()->isCurrentScreen(kScreenName_Stash, true))
 		return;
 
 	QSharedPointer<GameScreenData> topLeft = Lazybones::gameScreenManager()->findScreenData(kScreenName_InventoryTopLeft);
@@ -815,84 +832,165 @@ void MacroAction::doDisassembleAllItemWithoutLegendary(bool testMode)
 	Lazybones::inputEventManager()->worker()->doMouseLeftClick(158, 194);
 	QThread::msleep(300);
 
+	int delay = 180;
 	for(int i = 0; i < 6; i++)
 	{
-		if(!(testMode || presetData()->running()) && !Lazybones::isEmergencyStop())
+		if(Lazybones::isEmergencyStop())
 			break;
 
 		for(int j = 0; j < 10; j++)
 		{
-			if(!(testMode || presetData()->running()) && !Lazybones::isEmergencyStop())
+			if(i == 5 && j == 9)	// last item skip! (this is a portion!)
+				continue;
+
+			if(Lazybones::isEmergencyStop())
 				break;
 
 			int xx = x + (j * stepW);
 			int yy = y + (i * stepH);
-			QThread::msleep(50);
 			Lazybones::inputEventManager()->worker()->doMouseMove(xx, yy);
-			QThread::msleep(150);
+			Lazybones::inputEventManager()->worker()->doMouseRightClick(xx, yy);
+			QThread::msleep(delay);
+		}
+	}
+	SETTING_MANAGER->dropBox()->doScreenShot("MoveStash_", presetData()->windowRect());
+}
+
+void MacroAction::doDisassembleAllItemWithoutLegendary(void)
+{
+	if(!Lazybones::gameScreenManager()->isCurrentScreen(kScreenName_BlackSmith, true))
+		return;
+
+	QSharedPointer<GameScreenData> topLeft = Lazybones::gameScreenManager()->findScreenData(kScreenName_InventoryTopLeft);
+	if(!topLeft)
+		return;
+	QSharedPointer<GameScreenData> bottomRight = Lazybones::gameScreenManager()->findScreenData(kScreenName_InventoryBottomRight);
+	if(!bottomRight)
+		return;
+
+	int stepW = (bottomRight->pixelX() - topLeft->pixelX()) / 10;
+	int stepH = (bottomRight->pixelY() - topLeft->pixelY()) / 6;
+	int x = topLeft->pixelX() + (stepW / 2);
+	int y = topLeft->pixelY() + (stepH / 2);
+
+	qDebug() << x << y << stepW << stepH;
+
+	Lazybones::inputEventManager()->worker()->doMouseLeftClick(158, 194);
+	QThread::msleep(300);
+
+	int delay = 180;
+	for(int i = 0; i < 6; i++)
+	{
+		if(Lazybones::isEmergencyStop())
+			break;
+
+		for(int j = 0; j < 10; j++)
+		{
+			if(Lazybones::isEmergencyStop())
+				break;
+
+			int xx = x + (j * stepW);
+			int yy = y + (i * stepH);
+			Lazybones::inputEventManager()->worker()->doMouseMove(xx, yy);
 			Lazybones::inputEventManager()->worker()->doMouseLeftClick(xx, yy);
-			QThread::msleep(130);
+			QThread::msleep(delay);
 
 			if(Lazybones::gameScreenManager()->isCurrentScreen(kScreenName_Warning, true))
 			{
 				Lazybones::inputEventManager()->worker()->doMouseLeftClick(502, 239);
-				QThread::msleep(150);
+				QThread::msleep(delay);
 				Lazybones::inputEventManager()->worker()->doMouseLeftClick(158, 194);
-				QThread::msleep(150);
+				QThread::msleep(delay);
 			}
 		}
 	}
+	SETTING_MANAGER->dropBox()->doScreenShot("Disassemble_", presetData()->windowRect());
 }
 
-void MacroAction::doFindLegendaryItem(void)
+void MacroAction::doEatAllItem(int itemTypes)
 {
 	QRect windowRect = presetData()->windowRect();
+	int tryCount = 5;
 	int winW = windowRect.width();
 	int winH = windowRect.height();
+	QRect hintRect = QRect(winW / 4, winH / 4, winW / 2, winH / 2);
 
 	Lazybones::inputEventManager()->worker()->doKeyboardInput(Qt::Key_Alt);
 	QThread::msleep(300);
 
-	SETTING_MANAGER->dropBox()->doScreenShot("BossKill_", false, false);
-	QThread::msleep(300);
+	class FindInfo {
+	public:
+		FindInfo() { }
+		FindInfo(ItemType theItemType, QString theColor) : itemType(theItemType), color(theColor) { }
+		bool isLegendary(void) { return itemType & (MacroAction::LegendaryItem | MacroAction::SetItem); }
+		ItemType itemType;
+		QString color;
+	};
 
-	for(int i = 0; i < 4; i++)
+	QVector<FindInfo> findInfoList;
+
+	if(itemTypes & MacroAction::LegendaryItem)
 	{
+		findInfoList.append(FindInfo(MacroAction::LegendaryItem, kLegendaryItemColor));
+	}
+	if(itemTypes & MacroAction::SetItem)
+	{
+		findInfoList.append(FindInfo(MacroAction::SetItem, kSetItemColor));
+	}
+	if(itemTypes & MacroAction::RareItem)
+	{
+		findInfoList.append(FindInfo(MacroAction::RareItem, kRareItemColor));
+	}
+	if(itemTypes & MacroAction::MagicItem)
+	{
+		findInfoList.append(FindInfo(MacroAction::MagicItem, kMagicItemColor));
+	}
+
+	int legendaryCount = 0;
+	for(int i = 0; i < tryCount; i++)
+	{
+		QPoint pos;
 		int checked = 0;
-		QPoint pos = Lazybones::gameScreenManager()->findPixel(kLegendaryItemColor
-															   , kDefaultLegendaryColorOffset, kDefaultLegendaryColorOffset, kDefaultLegendaryColorOffset
-															   , QRect(QPoint(windowRect.x() + winW/2, windowRect.y() + winH/2), QSize(winW, winH)));
-		LOG_INFO() << "FIND ITEM LEGENDARY RESULT : " << pos.x() << "x" << pos.y();
-		if(!pos.isNull())
+
+		for(int j = 0; j < findInfoList.size(); j++)
 		{
-			Lazybones::inputEventManager()->worker()->doMouseLeftClick(pos.x(), pos.y());
-			presetData()->increaseLegendaryCount();
-			SETTING_MANAGER->dropBox()->doScreenShot("Legendary_", false, false);
-			QThread::msleep(1000);
+			QThread::msleep(100);
+
+			FindInfo &info = findInfoList[j];
+			pos = Lazybones::gameScreenManager()->findPixel(info.color
+																   , kDefaultLegendaryColorOffset, kDefaultLegendaryColorOffset, kDefaultLegendaryColorOffset
+																   , hintRect);
+			if(!pos.isNull())
+			{
+				Lazybones::inputEventManager()->worker()->doMouseLeftClick(pos.x(), pos.y());
+
+				if(info.isLegendary())
+				{
+					presetData()->increaseLegendaryCount();
+					legendaryCount++;
+				}
+				else
+					presetData()->increaseMagicRareCount();
+				QThread::msleep(1000);
+			}
+			else
+				checked++;
 		}
-		else
-			checked++;
 
-		QThread::msleep(100);
-
-		pos = Lazybones::gameScreenManager()->findPixel(kSetItemColor
-														, kDefaultSetColorOffset, kDefaultSetColorOffset, kDefaultSetColorOffset
-														, QRect(QPoint(winW/2, winH/2), QSize(winW, winH)));
-		LOG_INFO() << "FIND ITEM SET RESULT : " << pos.x() << "x" << pos.y();
-		if(!pos.isNull())
-		{
-			Lazybones::inputEventManager()->worker()->doMouseLeftClick(pos.x(), pos.y());
-			presetData()->increaseLegendaryCount();
-			SETTING_MANAGER->dropBox()->doScreenShot("Legendary_", false, false);
-			QThread::msleep(1000);
-		}
-		else
-			checked++;
-
-		QThread::msleep(100);
-
-		if(checked == 2)
+		if(checked == findInfoList.size())
 			break;
+	}
+
+	if(legendaryCount > 0)
+	{
+		qDebug() << "LEGENDARY ITEM FOUND :" << legendaryCount << presetData()->statsLegendaryCount();
+		Lazybones::inputEventManager()->worker()->doKeyboardInput(Qt::Key_I);
+		QThread::msleep(1000);
+
+		SETTING_MANAGER->dropBox()->doScreenShot("Legendary_", presetData()->windowRect(), false, false);
+
+		Lazybones::inputEventManager()->worker()->doKeyboardInput(Qt::Key_Escape);
+		QThread::msleep(300);
 	}
 }
 
@@ -910,11 +1008,11 @@ void MacroAction::onKeyEvent(QKeyEvent *event)
 			setRecording(false);
 			qDebug() << "EMERGENCY RECORD STOP";
 		}
-		else
+		else if(event->key() != Qt::Key_F7)
 		{
 			//qDebug() << "Add KeyEvent" << event->key() << recording();
 
-			QSharedPointer<InputAction> inputAction = InputAction::fromKeyEvent(event, __calculateDelayMsec(-1));
+			QSharedPointer<InputAction> inputAction = InputAction::fromKeyEvent(event, calculateDelayMsec(-1));
 			m_inputActionChunk.add(inputAction);
 		}
 	}
@@ -934,7 +1032,7 @@ void MacroAction::onMouseEvent(QMouseEvent *event)
 	if(!recording())
 		return;
 	//qDebug() << "MouseEvent" << m_actionType<< event->pos() << event->button();
-	QSharedPointer<InputAction> inputAction = InputAction::fromMouseEvent(event, __calculateDelayMsec(-1));
+	QSharedPointer<InputAction> inputAction = InputAction::fromMouseEvent(event, calculateDelayMsec(-1));
 	m_inputActionChunk.add(inputAction);
 }
 

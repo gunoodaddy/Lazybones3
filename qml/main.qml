@@ -6,7 +6,7 @@ import gunoodaddy 1.0
 
 Window {
 	id: macroWindow
-	width: 660
+	width: 670
 	height: 800
 	visible: true
 	title: "Lazybones3 ver 1.5 - gunoodaddy 2014"
@@ -142,19 +142,6 @@ Window {
 				editable: true
 				onCurrentIndexChanged: {
 					lazybones.currentMacroPresetIndex = currentIndex
-				}
-				onActiveFocusChanged: {
-//					if(!activeFocus) {
-//						if(editText.length > 0) {
-//							if(!lazybones.findMacroPreset(editText))
-//								lazybones.currentMacroPreset.title = editText
-//							else {
-//								warningPopup.text = "Already same title exists.";
-//								warningPopup.visible = true;
-//								editText = lazybones.currentMacroPreset.title;
-//							}
-//						}
-//					}
 				}
 			}
 			Button {
@@ -387,9 +374,17 @@ Window {
 				Text {
 					font.weight: Font.Black
 					font.pixelSize: __statSize
-					color: "#FF8000"
+					color: "#ff8003"
 					style: Text.Raised; styleColor: "black"
-					text: "ITEM : " + lazybones.currentMacroPreset.statsLegendaryCount
+					text: "ITEM1 : " + lazybones.currentMacroPreset.statsLegendaryCount
+				}
+
+				Text {
+					font.weight: Font.Black
+					font.pixelSize: __statSize
+					color: "#E6DB06"
+					style: Text.Raised; styleColor: "black"
+					text: "ITEM2 : " + lazybones.currentMacroPreset.statsLegendaryCount
 				}
 
 				Text {

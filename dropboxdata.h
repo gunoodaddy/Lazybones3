@@ -35,7 +35,7 @@ public:
 	bool findFile(QString fileName);
 
 	bool doScreenShotWithFilePath(QString filePath);
-	void doScreenShot(QString prefix = "", bool showErrorPopup = false, bool checkMaxCount = true);
+	void doScreenShot(QString prefix = "", QRect rect = QRect(), bool showErrorPopup = false, bool checkMaxCount = true);
 	Q_INVOKABLE void removeAllScreenShotFiles(void);
 
 	DropoxCommandReader *commandReader(void) { return &m_dropoxCommandReader; }
